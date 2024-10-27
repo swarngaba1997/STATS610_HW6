@@ -8,9 +8,17 @@ llr = function(x, y, z, omega) {
 
 # Compute f hat function:
 compute_f_hat = function(z, x, y, omega) {
-  Wz = make_weight_matrix(z, x, omega)
+  
+  # Changed Line
+  Wz = diag(make_weight_matrix(z, x, omega))
+  
   X = make_predictor_matrix(x)
-  f_hat = c(1, z) %*% solve(t(X) %*% Wz %*% X) %*% t(X) %*% Wz %*% y
+  
+  # Changed Line
+  scaled_X = sweep(X, 1, Wz, "*")
+  scaled_y = y * Wz
+  f_hat = c(1, z) %*% solve(t(X) %*% scaled_X) %*% t(X) %*% scaled_y
+  
   return(f_hat)
 }
 
